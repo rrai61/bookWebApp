@@ -22,16 +22,16 @@
         <div class="container">
             <div class="inside">
                 <table>
-                <th>Author ID</th>
-                <th>Name</th>
-                <th>Date Added</th>
-                <c:forEach var="item" items="${authorList}">
-                    <tr>
-                        <td>${item.authorId}</td>
-                        <td>${item.authorName}</td>
-                        <td><fmt:formatDate type="date" value="${item.dateAdded}"/></td>
-                    </tr>
-                </c:forEach>
+                    <th>Author ID</th>
+                    <th>Name</th>
+                    <th>Date Added</th>
+                    <c:forEach var="item" items="${authorList}">
+                        <tr>
+                            <td>${item.authorId}</td>
+                            <td>${item.authorName}</td>
+                            <td><fmt:formatDate type="date" value="${item.dateAdded}"/></td>
+                        </tr>
+                    </c:forEach>
                 </table>
             </div>
         </div><br>
