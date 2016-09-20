@@ -38,5 +38,6 @@
         </div><br>
         
         <a href="authorHomepage.jsp"><button type=button class="btn">Back to Home Page</button></a>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     </body>
 </html>
