@@ -13,7 +13,6 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="main.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <title>Author Table</title>
     </head>
     <body>
@@ -38,6 +37,5 @@
         </div><br>
         
         <a href="authorHomepage.jsp"><button type=button class="btn">Back to Home Page</button></a>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     </body>
 </html>
