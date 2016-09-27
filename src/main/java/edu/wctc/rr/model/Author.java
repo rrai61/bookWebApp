@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package edu.wctc.rr.model;
 
 import java.util.Date;
 import java.util.Objects;
@@ -85,7 +85,7 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author{" + "Author ID= " + authorId + ", Author Name= " + authorName + ", Date Added= " + dateAdded.toString() + '}';
+        return "Author{" + "Author ID= " + authorId + ", Author Name= " + authorName + ", Date Added= " + dateAdded + '}';
     }
     
     

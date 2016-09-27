@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package edu.wctc.rr.model;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,6 +16,8 @@ public interface AuthorDaoStrategy {
 
     List<Author> getAuthorList() throws ClassNotFoundException, SQLException;
     
-    void deleteAuthor(String columnValue, String columnName) throws ClassNotFoundException, SQLException;
+    void deleteAuthor(String columnValue) throws Exception;
+    
+    void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception;
     
 }

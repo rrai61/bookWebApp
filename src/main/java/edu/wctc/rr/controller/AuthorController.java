@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package edu.wctc.rr.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -16,11 +16,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Author;
-import model.AuthorDao;
-import model.AuthorDaoStrategy;
-import model.AuthorService;
-import model.MySqlDBStrategy;
+import edu.wctc.rr.model.Author;
+import edu.wctc.rr.model.AuthorDao;
+import edu.wctc.rr.model.AuthorDaoStrategy;
+import edu.wctc.rr.model.AuthorService;
+import edu.wctc.rr.model.MySqlDBStrategy;
 
 /**
  *

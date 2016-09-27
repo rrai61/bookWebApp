@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package edu.wctc.rr.model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,7 +40,9 @@ public class AuthorDao implements AuthorDaoStrategy {
     
     @Override
     public List<Author> getAuthorList() throws ClassNotFoundException, SQLException{
+        
         db.openConnection(driverClass, url, userName, password);
+        
         List<Map<String,Object>> records = db.findAllRecords("author", 500);
         List<Author> authors = new ArrayList<>();
         
@@ -65,9 +67,20 @@ public class AuthorDao implements AuthorDaoStrategy {
     }
     
     @Override
-    public void deleteAuthor(String columnValue, String columnName) throws ClassNotFoundException, SQLException{
+    public void deleteAuthor(String columnValue) throws Exception {
         db.openConnection(driverClass, url, userName, password);
-        db.deleteRecord("author", columnName, columnValue);
+        
+        Integer primaryKey = Integer.parseInt(columnValue);
+        db.deleteRecord("author", "author_id", primaryKey);
+      
+        db.closeConnection();
+    }
+    
+    @Override
+    public void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception {
+        db.openConnection(driverClass, url, userName, password);
+        
+        db.createRecord("author", columnNames, columnValues);
       
         db.closeConnection();
     }
@@ -79,6 +92,12 @@ public class AuthorDao implements AuthorDaoStrategy {
                 "root", "admin");
         
 //        dao.deleteAuthor("2", "author_id");
+       
+//        List<String> colNames = new ArrayList<>();
+//        colNames.add("author_name");
+//        List<Object> colValues = new ArrayList<>();
+//        colValues.add("J.K. Rowling");
+//        dao.createAuthor(colNames, colValues);
         
         List<Author> authors = dao.getAuthorList();
         System.out.println(authors);

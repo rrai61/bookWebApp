@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package edu.wctc.rr.model;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,9 +21,7 @@ public interface DBStrategy {
 
     void openConnection(String driverClass, String url, String userName, String password) throws ClassNotFoundException, SQLException;
     
-    void deleteRecord(String tableName, String primaryKey, String primaryValue) throws ClassNotFoundException, SQLException;
-    
-    void updateRecord(String tableName, String primaryKey, String primaryValue) throws ClassNotFoundException, SQLException;
+    void deleteRecord(String tableName, String primaryKey, Object primaryValue) throws ClassNotFoundException, SQLException;
     
     void createRecord(String tableName, List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException;
     
