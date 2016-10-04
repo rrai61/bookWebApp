@@ -20,20 +20,29 @@ public class AuthorService {
     private AuthorDaoStrategy dao;
 
     public AuthorService(AuthorDaoStrategy dao) {
+        
         this.dao = dao;
     }
     
-    public List<Author> getAuthorList() throws ClassNotFoundException, SQLException {
+    public final List<Author> getAuthorList() throws ClassNotFoundException, SQLException {
         
         return dao.getAuthorList();
     }
     
-    public void deleteAuthor(String columnValue) throws Exception {
-        dao.deleteAuthor(columnValue);
+    public final void deleteAuthor(String columnName, Object columnValue) throws Exception {
+        
+        dao.deleteAuthor(columnName, columnValue);
     }
     
-    public void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception {
+    public final void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception {
+        
         dao.createAuthor(columnNames, columnValues);
+    }
+    
+    public final void updateAuthor(String primaryColumnName, Object primaryColumnValue, 
+            List<String> columnNames, List<Object> columnValues) throws Exception {
+        
+        dao.updateAuthor(primaryColumnName, primaryColumnValue, columnNames, columnValues);
     }
     
     public static void main(String[] args) throws Exception{
@@ -44,13 +53,13 @@ public class AuthorService {
                 "root", "admin");
         AuthorService service = new AuthorService(dao);
         
-        //service.deleteAuthor("7");
+        service.deleteAuthor("author_id", "8");
         
-        List<String> colNames = new ArrayList<>();
-        colNames.add("author_name");
-        List<Object> colValues = new ArrayList<>();
-        colValues.add("Peter Holmes");
-        service.createAuthor(colNames, colValues);
+//        List<String> colNames = new ArrayList<>();
+//        colNames.add("author_name");
+//        List<Object> colValues = new ArrayList<>();
+//        colValues.add("Willy Wonka");
+//        service.updateAuthor("author_id", "8", colNames, colValues);
         
         List<Author> authors = service.getAuthorList();
         System.out.println(authors);

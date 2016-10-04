@@ -16,8 +16,10 @@ public interface AuthorDaoStrategy {
 
     List<Author> getAuthorList() throws ClassNotFoundException, SQLException;
     
-    void deleteAuthor(String columnValue) throws Exception;
+    void deleteAuthor(String columnName, Object columnValue) throws Exception;
     
     void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception;
+    
+    void updateAuthor(String primaryKeyName, Object primaryValue, List<String> columnNames, List<Object> columnValues) throws Exception;
     
 }

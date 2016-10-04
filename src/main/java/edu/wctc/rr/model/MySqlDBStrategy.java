@@ -13,8 +13,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +23,12 @@ import java.util.StringJoiner;
  * @author ritu
  */
 public class MySqlDBStrategy implements DBStrategy {
+
     private Connection conn;
     
     @Override
     public void openConnection(String driverClass, String url, 
-            String userName, String password) 
-            throws ClassNotFoundException, SQLException {
+            String userName, String password) throws ClassNotFoundException, SQLException {
         
         Class.forName (driverClass);
 	conn = DriverManager.getConnection(url, userName, password);
@@ -45,42 +43,68 @@ public class MySqlDBStrategy implements DBStrategy {
     @Override
     public final List<Map<String,Object>> findAllRecords(String tableName, int maxRecords) throws SQLException {
         
-        String sql = "SELECT * FROM " + tableName + " LIMIT " + maxRecords;        
-        Statement stmt = conn.createStatement();
-	ResultSet rs = stmt.executeQuery(sql);      
+        String sql ="";
         List<Map<String,Object>> records = new ArrayList<>();
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int colCount = rsmd.getColumnCount();
-        
-	while(rs.next()) {
-            Map<String,Object> record = new LinkedHashMap<>();
-            for(int i=0; i < colCount; i++){
-                String colName = rsmd.getColumnName(i+1);
-                Object colData = rs.getObject(colName);
-                record.put(colName, colData);
+        try {
+            if(tableName.isEmpty()){ 
+                throw new InvalidEntryException("Error: tableName cannot be empty");
             }
-            records.add(record);
+            if(maxRecords <= 0) {
+                throw new InvalidEntryException("Error: maxRecords must be greater than 0");
+            }
+            else {
+                sql = "SELECT * FROM " + tableName + " LIMIT " + maxRecords;        
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int colCount = rsmd.getColumnCount();    
+                while(rs.next()) {
+                    Map<String,Object> record = new LinkedHashMap<>();
+                    for(int i=0; i < colCount; i++){
+                        String colName = rsmd.getColumnName(i+1);
+                        Object colData = rs.getObject(colName);
+                        record.put(colName, colData);
+                    }
+                    records.add(record);
+                }
+            }
         }
-        
+        catch(InvalidEntryException ex)
+        {
+            System.out.println(ex.getMessage());
+        }     
         return records;
     }
     
     //DELETE method to delete records from table
     @Override
-    public final void deleteRecord(String tableName, String primaryKey, 
+    public final void deleteRecord(String tableName, String primaryKeyName, 
             Object primaryValue) throws SQLException {
-
-        PreparedStatement stmt = buildDeleteStatement(tableName, primaryKey, primaryValue);      
-        stmt.executeUpdate();   
+        try {
+            if(tableName.isEmpty()){ 
+                throw new InvalidEntryException("Error: tableName cannot be empty");
+            }
+            if(primaryKeyName.isEmpty()) {
+                throw new InvalidEntryException("Error: maxRecords must be greater than 0");
+            }
+            if(primaryValue == null) {
+                throw new InvalidEntryException("Error: primaryValue cannot be null");
+            }
+            else {
+                PreparedStatement stmt = buildDeleteStatement(tableName, primaryKeyName);
+                stmt.setObject(1, primaryValue);
+                stmt.executeUpdate(); 
+            }
+        }
+        catch (InvalidEntryException ex){
+            System.out.println(ex.getMessage());
+        }  
     }
     
-    private PreparedStatement buildDeleteStatement(String tableName, String primaryKey, 
-            Object primaryValue) throws SQLException {
+    private PreparedStatement buildDeleteStatement(String tableName, String primaryKeyName) throws SQLException {
         
-        String sql = "DELETE FROM " + tableName + " WHERE " + primaryKey + " = ?";
+        String sql = "DELETE FROM " + tableName + " WHERE " + primaryKeyName + " = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);   
-        stmt.setObject(1, primaryValue);
-        
         return stmt;
     }
     
@@ -89,6 +113,31 @@ public class MySqlDBStrategy implements DBStrategy {
     public final void createRecord(String tableName, List<String> colNames, 
             List<Object> colValues) throws SQLException {
         
+        try {
+            if(tableName.isEmpty()){ 
+                throw new InvalidEntryException("Error: tableName cannot be empty");
+            }
+            if(colNames.isEmpty()) {
+                throw new InvalidEntryException("Error: List of colNames cannot be empty");
+            }
+            if(colValues.isEmpty()) {
+                throw new InvalidEntryException("Error: List of colValues cannot be empty");
+            }
+            else {
+                PreparedStatement stmt = buildCreateStatement(tableName, colNames);
+                for(int i=0; i<colValues.size(); i++){
+                    stmt.setObject(i+1, colValues.get(i));
+                }    
+                stmt.executeUpdate();
+            }
+        }
+        catch (InvalidEntryException ex){
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private PreparedStatement buildCreateStatement(String tableName, List<String> colNames) throws SQLException {
+        
         String sql = "INSERT INTO " + tableName;
         StringJoiner sj = new StringJoiner(", ", " (",")");
         for(String colName : colNames){
@@ -96,19 +145,62 @@ public class MySqlDBStrategy implements DBStrategy {
         }
         sql += sj.toString();
         sql += " VALUES ";
-        
         StringJoiner sj2 = new StringJoiner(", ", " (",")");
-        for(Object colVal : colValues){
+        for(String colName : colNames){
             sj2.add("?");
         }
         sql += sj2.toString();
+        PreparedStatement stmt = conn.prepareStatement(sql);  
+        return stmt;
+    }
+    
+    //UPDATE method for updating a record in the database
+    @Override
+    public final void updateRecord(String tableName, String primaryKeyName, Object primaryValue, List<String> colNames, 
+            List<Object> colValues) throws SQLException {
         
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        for(int i=0; i<colValues.size(); i++){
-            stmt.setObject(i+1, colValues.get(i));
+        try {
+            if(tableName.isEmpty()) { 
+                throw new InvalidEntryException("Error: tableName cannot be empty");
+            }
+            if(primaryKeyName.isEmpty()) {
+                throw new InvalidEntryException("Error: primaryKeyName cannot be empty");
+            }
+            if(primaryValue == null) {
+                throw new InvalidEntryException("Error: primaryValue cannot be null");
+            }
+            if(colNames.isEmpty()) {
+                throw new InvalidEntryException("Error: List of colNames cannot be empty");
+            }
+            if(colValues.isEmpty()) {
+                throw new InvalidEntryException("Error: List of colValues cannot be empty");
+            }
+            else {
+                PreparedStatement stmt = buildUpdateStatement(tableName, primaryKeyName, colNames);  
+                for(int i=0; i<colValues.size(); i++){
+                    stmt.setObject(i+1, colValues.get(i));
+                }
+                stmt.setObject(colValues.size()+1, primaryValue);
+                stmt.executeUpdate();
+            }
         }
+        catch(InvalidEntryException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private PreparedStatement buildUpdateStatement(String tableName, String primaryKeyName, 
+            List<String> colNames) throws SQLException{
         
-        stmt.executeUpdate();
+        String sql = "UPDATE " + tableName + " SET ";  
+        StringJoiner sj = new StringJoiner(", ");       
+        for(String colName : colNames){
+            sj.add(colName + "= ?");
+        }
+        sql += sj.toString();
+        sql += " WHERE " + primaryKeyName + " = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);  
+        return stmt;
     }
     
     
@@ -126,6 +218,13 @@ public class MySqlDBStrategy implements DBStrategy {
 //        List<Object> colValues = new ArrayList<>();
 //        colValues.add("John Harding");
 //        db.createRecord("author", colNames, colValues);
+        
+        // update a record
+//        List<String> colNames = new ArrayList<>();
+//        colNames.add("author_name");
+//        List<Object> colValues = new ArrayList<>();
+//        colValues.add("John Harding");
+//        db.updateRecord("author", "author_id", "6", colNames, colValues);
         
         // find all records
         List<Map<String,Object>> records = db.findAllRecords("author", 500);

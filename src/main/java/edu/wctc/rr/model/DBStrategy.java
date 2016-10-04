@@ -21,8 +21,11 @@ public interface DBStrategy {
 
     void openConnection(String driverClass, String url, String userName, String password) throws ClassNotFoundException, SQLException;
     
-    void deleteRecord(String tableName, String primaryKey, Object primaryValue) throws ClassNotFoundException, SQLException;
+    void deleteRecord(String tableName, String primaryKeyName, Object primaryValue) throws ClassNotFoundException, SQLException;
     
     void createRecord(String tableName, List<String> colNames, List<Object> colValues) throws ClassNotFoundException, SQLException;
+    
+    void updateRecord(String tableName, String primaryKeyName, Object primaryValue, List<String> colNames, 
+            List<Object> colValues) throws SQLException;
     
 }
