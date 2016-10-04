@@ -20,7 +20,7 @@
         <title>Author Table</title>
     </head>
     <body>
-        <form id="recForm" name="recForm" method="POST" action="">
+        <form id="authorForm" name="authorForm" method="POST" action="${pageContext.request.contextPath}/EditController">
             <div id="headContainer">
                 <h1 id="heading">Table of Authors</h1>
             </div>

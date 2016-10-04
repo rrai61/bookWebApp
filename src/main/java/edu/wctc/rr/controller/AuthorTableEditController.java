@@ -48,7 +48,7 @@ public class AuthorTableEditController extends HttpServlet {
         for(int i = 0; i < results.length; i++) {
             service.deleteAuthor("author_id", results[i]);
         }
-        RequestDispatcher view = request.getRequestDispatcher("/AuthorController.java");
+        RequestDispatcher view = request.getRequestDispatcher("/authorHomepage.jsp");
         view.forward(request, response);
     }
 
