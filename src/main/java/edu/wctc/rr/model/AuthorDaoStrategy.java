@@ -14,12 +14,16 @@ import java.util.List;
  */
 public interface AuthorDaoStrategy {
 
-    List<Author> getAuthorList() throws ClassNotFoundException, SQLException;
+    List<Author> getAuthorList() throws Exception;
+    
+    Author findAuthorById(String columnName, Object columnValue) throws Exception;
+    
+    void initDao(String driverClass, String url, String userName, String password);
     
     void deleteAuthor(String columnName, Object columnValue) throws Exception;
     
     void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception;
     
-    void updateAuthor(String primaryKeyName, Object primaryValue, List<String> columnNames, List<Object> columnValues) throws Exception;
+    void updateAuthor(String columnName, Object columnValue, List<String> columnNames, List<Object> columnValues) throws Exception;
     
 }

@@ -5,64 +5,78 @@
  */
 package edu.wctc.rr.model;
 
+import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 
 /**
  *
  * @author ritu
  */
-public class AuthorService {
+@SessionScoped
+public class AuthorService implements Serializable{
+    
+    @Inject
     private AuthorDaoStrategy dao;
+    
+    public AuthorService(){
+    }
 
-    public AuthorService(AuthorDaoStrategy dao) {
-        
+    public AuthorDaoStrategy getDao() {
+        return dao;
+    }
+
+    public void setDao(AuthorDaoStrategy dao) {
         this.dao = dao;
     }
-    
-    public final List<Author> getAuthorList() throws ClassNotFoundException, SQLException {
+
+    public List<Author> getAuthorList() throws ClassNotFoundException, SQLException, Exception {
         
         return dao.getAuthorList();
     }
     
-    public final void deleteAuthor(String columnName, Object columnValue) throws Exception {
+    public Author getAuthorById(String columnName, Object columnValue) throws Exception{
+        
+        return dao.findAuthorById(columnName, columnValue);
+    }
+    
+    public void deleteAuthor(String columnName, Object columnValue) throws Exception {
         
         dao.deleteAuthor(columnName, columnValue);
     }
     
-    public final void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception {
+    public void createAuthor(List<String> columnNames, List<Object> columnValues) throws Exception {
         
         dao.createAuthor(columnNames, columnValues);
     }
     
-    public final void updateAuthor(String primaryColumnName, Object primaryColumnValue, 
+    public void updateAuthor(String primaryColumnName, Object primaryColumnValue, 
             List<String> columnNames, List<Object> columnValues) throws Exception {
         
         dao.updateAuthor(primaryColumnName, primaryColumnValue, columnNames, columnValues);
     }
     
-    public static void main(String[] args) throws Exception{
-        
-        AuthorDaoStrategy dao = new AuthorDao(new MySqlDBStrategy(), 
-                "com.mysql.jdbc.Driver", 
-                "jdbc:mysql://localhost:3306/book", 
-                "root", "admin");
-        AuthorService service = new AuthorService(dao);
-        
-        service.deleteAuthor("author_id", "8");
-        
-//        List<String> colNames = new ArrayList<>();
-//        colNames.add("author_name");
-//        List<Object> colValues = new ArrayList<>();
-//        colValues.add("Willy Wonka");
-//        service.updateAuthor("author_id", "8", colNames, colValues);
-        
-        List<Author> authors = service.getAuthorList();
-        System.out.println(authors);
-    }
-
+//    public static void main(String[] args) throws Exception{
+//        
+//        AuthorDaoStrategy dao = new AuthorDao(new MySqlDBStrategy(), 
+//                "com.mysql.jdbc.Driver", 
+//                "jdbc:mysql://localhost:3306/book", 
+//                "root", "admin");
+//        AuthorService service = new AuthorService(dao);
+//        
+//        service.deleteAuthor("author_id", "8");
+//        
+////        List<String> colNames = new ArrayList<>();
+////        colNames.add("author_name");
+////        List<Object> colValues = new ArrayList<>();
+////        colValues.add("Willy Wonka");
+////        service.updateAuthor("author_id", "8", colNames, colValues);
+//        
+//        List<Author> authors = service.getAuthorList();
+//        System.out.println(authors);
+//    }
+//
+//}
 }

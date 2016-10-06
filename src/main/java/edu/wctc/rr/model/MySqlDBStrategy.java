@@ -5,6 +5,7 @@
  */
 package edu.wctc.rr.model;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,16 +14,19 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import javax.enterprise.context.Dependent;
 
 /**
  * Database Access Strategy Object (low-level)
  * @author ritu
  */
-public class MySqlDBStrategy implements DBStrategy {
+@Dependent
+public class MySqlDBStrategy implements DBStrategy, Serializable {
 
     private Connection conn;
     
@@ -41,7 +45,7 @@ public class MySqlDBStrategy implements DBStrategy {
     }
     
     @Override
-    public final List<Map<String,Object>> findAllRecords(String tableName, int maxRecords) throws SQLException {
+    public List<Map<String,Object>> findAllRecords(String tableName, int maxRecords) throws SQLException {
         
         String sql ="";
         List<Map<String,Object>> records = new ArrayList<>();
@@ -76,9 +80,39 @@ public class MySqlDBStrategy implements DBStrategy {
         return records;
     }
     
+    @Override
+    public Map<String,Object> findRecordById(String tableName, String primaryKeyName, Object primaryValue) throws SQLException {
+        
+        String sql ="";
+        Map<String,Object> record = new LinkedHashMap<>();
+        String colName ="";
+        Object colData = "";
+        try {
+            if(primaryValue == null){ 
+                throw new InvalidEntryException("Error: primaryValue cannot be null");
+            }
+            else {
+                sql = "SELECT * FROM " + tableName + " WHERE " + primaryKeyName + " = " + primaryValue;        
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                ResultSetMetaData rsmd = rs.getMetaData(); 
+                int colCount = rsmd.getColumnCount(); 
+                for(int i=0; i < colCount; i++){
+                    colName = rsmd.getColumnName(i+1);
+                    colData = rs.getObject(colName);
+                    record.put(colName, colData);
+                }
+            }
+        }
+        catch (InvalidEntryException ex){
+            System.out.println(ex.getMessage());
+        }
+        return record;
+    }
+    
     //DELETE method to delete records from table
     @Override
-    public final void deleteRecord(String tableName, String primaryKeyName, 
+    public void deleteRecord(String tableName, String primaryKeyName, 
             Object primaryValue) throws SQLException {
         try {
             if(tableName.isEmpty()){ 
@@ -110,7 +144,7 @@ public class MySqlDBStrategy implements DBStrategy {
     
     //CREATE method to create/insert record in table
     @Override
-    public final void createRecord(String tableName, List<String> colNames, 
+    public void createRecord(String tableName, List<String> colNames, 
             List<Object> colValues) throws SQLException {
         
         try {
@@ -156,7 +190,7 @@ public class MySqlDBStrategy implements DBStrategy {
     
     //UPDATE method for updating a record in the database
     @Override
-    public final void updateRecord(String tableName, String primaryKeyName, Object primaryValue, List<String> colNames, 
+    public void updateRecord(String tableName, String primaryKeyName, Object primaryValue, List<String> colNames, 
             List<Object> colValues) throws SQLException {
         
         try {
@@ -204,32 +238,32 @@ public class MySqlDBStrategy implements DBStrategy {
     }
     
     
-    public static void main(String[] args) throws Exception {
-        DBStrategy db = new MySqlDBStrategy();
-        
-        db.openConnection("com.mysql.jdbc.Driver", 
-                "jdbc:mysql://localhost:3306/book", "root", "admin");
-        // delete a record
-//        db.deleteRecord("author", "author_id", "3");
-        
-        // create a record
-//        List<String> colNames = new ArrayList<>();
-//        colNames.add("author_name");
-//        List<Object> colValues = new ArrayList<>();
-//        colValues.add("John Harding");
-//        db.createRecord("author", colNames, colValues);
-        
-        // update a record
-//        List<String> colNames = new ArrayList<>();
-//        colNames.add("author_name");
-//        List<Object> colValues = new ArrayList<>();
-//        colValues.add("John Harding");
-//        db.updateRecord("author", "author_id", "6", colNames, colValues);
-        
-        // find all records
-        List<Map<String,Object>> records = db.findAllRecords("author", 500);
-        System.out.println(records);
-        db.closeConnection();
-    }
+//    public static void main(String[] args) throws Exception {
+//        DBStrategy db = new MySqlDBStrategy();
+//        
+//        db.openConnection("com.mysql.jdbc.Driver", 
+//                "jdbc:mysql://localhost:3306/book", "root", "admin");
+//        // delete a record
+////        db.deleteRecord("author", "author_id", "3");
+//        
+//        // create a record
+////        List<String> colNames = new ArrayList<>();
+////        colNames.add("author_name");
+////        List<Object> colValues = new ArrayList<>();
+////        colValues.add("John Harding");
+////        db.createRecord("author", colNames, colValues);
+//        
+//        // update a record
+////        List<String> colNames = new ArrayList<>();
+////        colNames.add("author_name");
+////        List<Object> colValues = new ArrayList<>();
+////        colValues.add("John Harding");
+////        db.updateRecord("author", "author_id", "6", colNames, colValues);
+//        
+//        // find all records
+//        List<Map<String,Object>> records = db.findAllRecords("author", 500);
+//        System.out.println(records);
+//        db.closeConnection();
+//    }
     
 }

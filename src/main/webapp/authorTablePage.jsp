@@ -20,11 +20,12 @@
         <title>Author Table</title>
     </head>
     <body>
-        <form id="authorForm" name="authorForm" method="POST" action="${pageContext.request.contextPath}/EditController">
+        <form method="POST" action="${pageContext.request.contextPath}/AuthorController?action=manage">
             <div id="headContainer">
                 <h1 id="heading">Table of Authors</h1>
             </div>
-            <input id="addAuth" type="submit" value="Delete An Author"/>
+            <input type="submit" name="submit" value="delete"/>&nbsp;
+            <input type="submit" name="submit" value="add/edit"/>
             <div class="container">
                 <div class="inside">
                     <table>
@@ -46,5 +47,4 @@
         </form>
         <a href="authorHomepage.jsp"><button type=button class="btn">Back to Home Page</button></a>
     </body>
-
 </html>
