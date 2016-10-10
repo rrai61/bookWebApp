@@ -82,25 +82,24 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
     
     @Override
     public Map<String,Object> findRecordById(String tableName, String primaryKeyName, Object primaryValue) throws SQLException {
-        
-        String sql ="";
+
         Map<String,Object> record = new LinkedHashMap<>();
-        String colName ="";
-        Object colData = "";
         try {
             if(primaryValue == null){ 
                 throw new InvalidEntryException("Error: primaryValue cannot be null");
             }
-            else {
-                sql = "SELECT * FROM " + tableName + " WHERE " + primaryKeyName + " = " + primaryValue;        
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-                ResultSetMetaData rsmd = rs.getMetaData(); 
-                int colCount = rsmd.getColumnCount(); 
-                for(int i=0; i < colCount; i++){
-                    colName = rsmd.getColumnName(i+1);
-                    colData = rs.getObject(colName);
-                    record.put(colName, colData);
+            else {     
+                PreparedStatement stmt = buildFindRecordByIdStatement(tableName, primaryKeyName);
+                stmt.setObject(1, primaryValue);
+                ResultSet rs2 = stmt.executeQuery(); 
+                ResultSetMetaData rsmd2 = rs2.getMetaData(); 
+                int colCount = rsmd2.getColumnCount(); 
+                while(rs2.next()) {
+                    for(int i=0; i < colCount; i++){
+                        String colName = rsmd2.getColumnName(i+1);
+                        Object colData = rs2.getObject(colName);
+                        record.put(colName, colData);
+                    }
                 }
             }
         }
@@ -108,6 +107,13 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             System.out.println(ex.getMessage());
         }
         return record;
+    }
+    
+    private PreparedStatement buildFindRecordByIdStatement(String tableName, String primaryKeyName) throws SQLException {
+        
+        String sql = "SELECT * FROM " + tableName + " WHERE " + primaryKeyName + " = ?";   
+        PreparedStatement stmt = conn.prepareStatement(sql);   
+        return stmt;
     }
     
     //DELETE method to delete records from table

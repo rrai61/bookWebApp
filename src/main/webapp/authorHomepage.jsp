@@ -21,7 +21,7 @@
                 <h1 id="heading">Author Home Page</h1>
             </div>
             <img class="shape" src="http://bestanimations.com/Books/writing/calligraphy-pen-writing-book-words-close-up-inspiration-animated-gif.gif" alt="WRITING GIF"/>
-            <br><input type=submit id="homeBtn" class="btn" value="View Authors"/>
+            <br><input type=submit name="submit" id="homeBtn" class="btn" value="View Authors"/>
         </form>
     </body>
 </html>

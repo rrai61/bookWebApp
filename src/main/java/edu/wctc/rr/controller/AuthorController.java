@@ -21,7 +21,9 @@ import edu.wctc.rr.model.AuthorDao;
 import edu.wctc.rr.model.AuthorDaoStrategy;
 import edu.wctc.rr.model.AuthorService;
 import edu.wctc.rr.model.MySqlDBStrategy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.inject.Inject;
 
 /**
@@ -52,7 +54,7 @@ public class AuthorController extends HttpServlet {
      * @throws java.sql.SQLException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException {
+            throws ServletException, IOException, ClassNotFoundException, SQLException, Exception {
         
         response.setContentType("text/html;charset=UTF-8");
         
@@ -62,11 +64,41 @@ public class AuthorController extends HttpServlet {
             String action = request.getParameter("action");
             String subAction = request.getParameter("submit");
             String[] results;
-        
+            List<String> columnNamesList = new ArrayList<>();
+            columnNamesList.add("author_name");
+            columnNamesList.add("date_added");
+            List<Object> columnValuesList;
+            
             switch(action) {
                 case "view":
+                    switch(subAction) {
+                        case "Create":
+                            // creating new author
+                            columnValuesList = new ArrayList<>();
+                            columnValuesList.add(request.getParameter("nameObj"));
+                            columnValuesList.add(new Date());
+                            authService.createAuthor(columnNamesList, columnValuesList);
+                            break;
+                        case "Save":
+                            // updating edit to existing author
+                            columnValuesList = new ArrayList<>();
+                            columnValuesList.add(request.getParameter("nameObj"));
+                            String dateString = request.getParameter("dateObj");
+                            Date startDate= new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                            columnValuesList.add(startDate);
+                            String idStr = request.getParameter("idObj");
+                            Integer id = Integer.parseInt(idStr);
+                            authService.updateAuthor("author_id", id, columnNamesList, columnValuesList);
+                            break;
+                        default:
+                            this.refreshList(request, authService);
+                            destination = "/authorTablePage.jsp";
+                    }
+                    results = null;
                     this.refreshList(request, authService);
+                    destination = "/authorTablePage.jsp";
                     break;
+                    
                 case "manage":
                     switch(subAction) {
                         case "delete": 
@@ -75,23 +107,21 @@ public class AuthorController extends HttpServlet {
                                 authService.deleteAuthor("author_id", results[i]);
                             }
                             this.refreshList(request, authService);
+                            destination = "/authorTablePage.jsp";
                             break;
                         case "add/edit":
                             results = request.getParameterValues("authorCheck");
-                            List<Author> editList = new ArrayList();
+
                             if(results == null){
                                 // add action
-                                Author author = new Author();
-                                editList.add(author);
+                                Author author = null;
+                                request.setAttribute("author", author);
                             }
                             else {
                                 // edit action
-                                for(int i=0; i < results.length; i++) {
-                                    Author author1 = authService.getAuthorById("author_id", results[i]);
-                                    editList.add(author1);
-                                }
+                                Author author = authService.getAuthorById("author_id", results[0]);
+                                request.setAttribute("author", author);
                             }
-                            request.setAttribute("editList", editList);
                             destination = "/authorAddEdit.jsp";
                             break;
                     }
@@ -99,7 +129,8 @@ public class AuthorController extends HttpServlet {
             }
         }
         catch(Exception e) {
-            request.setAttribute("errMsg", e.getCause().getMessage());
+            e.printStackTrace();
+//            request.setAttribute("errMsg", e.getCause().getMessage());
         }
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
@@ -139,6 +170,8 @@ public class AuthorController extends HttpServlet {
             Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -158,6 +191,8 @@ public class AuthorController extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

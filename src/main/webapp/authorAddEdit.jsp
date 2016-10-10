@@ -4,6 +4,8 @@
     Author     : ritu
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -20,22 +22,36 @@
             <div class="container">
                 <div class="inside">
                     <table>
-                        <th></th>
-                        <th>Author ID</th>
-                        <th>Name</th>
-                        <th>Date Added</th>
-                        <c:forEach var="item" items="${editList}">
+                        <c:choose>
+                            <c:when test="${not empty author}">
                             <tr>
-                                <td>${item.authorId}</td>
-                                <td>${item.authorName}</td>
-                                <td><fmt:formatDate type="date" value=${item.dateAdded}/></td>
+                                <td><th>Author Id</th></td>
+                                <td><input type="text" name="idObj" value="${author.authorId}" readonly/></td>
                             </tr>
-                        </c:forEach>
+                            </c:when>
+                        </c:choose>
+                            <tr>
+                                <td><th>Author Name</th></td>
+                                <td><input type="text" name="nameObj" value="${author.authorName}"/></td>
+                            </tr>
+                        <c:choose>
+                            <c:when test="${not empty author}">
+                            <tr>
+                                <td><th>Date Added</th></td>
+                                <td><input type="date" name="dateObj" value="${author.dateAdded}"/></td>
+                            </tr>
+                            <input type="submit" name="submit" value="Save"/>
+                            </c:when>
+                        </c:choose>
                     </table>
                 </div>
             </div><br>
-            <input type="submit" name="submit" value="save"/>&nbsp;
-            <input type="submit" name="submit" value="cancel"/>
+            <c:choose>
+                <c:when test="${empty author}">
+                    <input type="submit" name="submit" value="Create"/>&nbsp;
+                </c:when>
+            </c:choose>
+            <input type="submit" name="submit" value="Cancel"/>
         </form>
     </body>
 </html>
