@@ -7,6 +7,7 @@ package edu.wctc.rr.model;
 
 import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
 
 /**
  * Interface for low level AuthorDao object
@@ -19,6 +20,8 @@ public interface AuthorDaoStrategy {
     Author findAuthorById(String columnName, Object columnValue) throws Exception;
     
     void initDao(String driverClass, String url, String userName, String password);
+    
+    void initDao(DataSource ds) throws SQLException;
     
     void deleteAuthor(String columnName, Object columnValue) throws Exception;
     

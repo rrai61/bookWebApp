@@ -16,19 +16,26 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="main.css">
-        <title>Author Table</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="custom.css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <title>${name} Author Table</title>
     </head>
     <body>
+        <br><br>
         <form method="POST" action="${pageContext.request.contextPath}/AuthorController?action=manage">
-            <div id="headContainer">
-                <h1 id="heading">Table of Authors</h1>
-            </div>
-            <input type="submit" name="submit" value="delete"/>&nbsp;
-            <input type="submit" name="submit" value="add/edit"/>
-            <div class="container">
-                <div class="inside">
-                    <table>
+            <div class="container container-narrow">
+                <div class="row">
+                    <h1 class="col-lg-12">${name} Table of Authors</h1>
+                </div><br><br>
+                <div class="leftDiv">
+                    <input type="submit" name="submit" class="btn btn-default okBtn" value="add/edit"/>&nbsp;
+                    <input type="submit" name="submit" class="btn btn-default cancelBtn" value="delete"/><br><br>
+                    <table class="table table-hover">
                         <th></th>
                         <th>Author ID</th>
                         <th>Name</th>
@@ -42,9 +49,14 @@
                             </tr>
                         </c:forEach>
                     </table>
+                    <input type="submit" name="submit" class="btn btn-default okBtn" value="add/edit"/>&nbsp;
+                    <input type="submit" name="submit" class="btn btn-default cancelBtn" value="delete"/><br><br>
                 </div>
-            </div><br>
-        </form>
-        <a href="authorHomepage.jsp"><button type=button class="btn">Back to Home Page</button></a>
+                <a href="authorHomepage.jsp"><button type=button class="btn btn-default homeBtn">Back to Home Page</button></a>
+            </div>
+        </form><br>
+        <c:if test="${errMsg != null}">
+            <div>${errMsg}<div><br>
+        </c:if>
     </body>
 </html>

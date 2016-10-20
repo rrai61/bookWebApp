@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * @author ritu
  */
 @SessionScoped
-public class AuthorService implements Serializable{
+public class AuthorService implements Serializable {
     
     @Inject
     private AuthorDaoStrategy dao;

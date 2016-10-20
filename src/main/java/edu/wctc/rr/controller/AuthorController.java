@@ -20,11 +20,17 @@ import edu.wctc.rr.model.Author;
 import edu.wctc.rr.model.AuthorDao;
 import edu.wctc.rr.model.AuthorDaoStrategy;
 import edu.wctc.rr.model.AuthorService;
+import edu.wctc.rr.model.InvalidEntryException;
 import edu.wctc.rr.model.MySqlDBStrategy;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.inject.Inject;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 /**
  *
@@ -38,6 +44,11 @@ public class AuthorController extends HttpServlet {
     private String url;
     private String userName;
     private String password;
+    private HttpSession session;
+    
+    private String webmasterEmail;
+    
+    private String dbJndiName;
     
     @Inject
     private AuthorService authService;
@@ -57,7 +68,7 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException, ClassNotFoundException, SQLException, Exception {
         
         response.setContentType("text/html;charset=UTF-8");
-        
+
         try {
             configDbConnection();
 
@@ -72,6 +83,14 @@ public class AuthorController extends HttpServlet {
             switch(action) {
                 case "view":
                     switch(subAction) {
+                        case "Start Session":   
+                            String name = request.getParameter("nameStr") +"'s";
+                            session = request.getSession();
+                            session.setAttribute("name", name);                   
+                            break;
+                        case "End Session":
+                            session.invalidate();   
+                            break;
                         case "Create":
                             // creating new author
                             columnValuesList = new ArrayList<>();
@@ -128,9 +147,11 @@ public class AuthorController extends HttpServlet {
                     break;                    
             }
         }
+        catch(InvalidEntryException iee) {
+            request.setAttribute("errMsg", iee.getCause().getMessage());
+        }
         catch(Exception e) {
-            e.printStackTrace();
-//            request.setAttribute("errMsg", e.getCause().getMessage());
+            request.setAttribute("errMsg", e.getMessage());
         }
         RequestDispatcher view = request.getRequestDispatcher(destination);
         view.forward(request, response);
@@ -143,14 +164,25 @@ public class AuthorController extends HttpServlet {
     
     @Override
     public void init() throws ServletException {
-        driverClass = "com.mysql.jdbc.Driver";
-        url = "jdbc:mysql://localhost:3306/book";
-        userName = "root";
-        password = "admin";
+
+        driverClass = getServletContext().getInitParameter("db.driver.class");
+        url = getServletContext().getInitParameter("db.url");
+        userName = getServletContext().getInitParameter("db.username");
+        password = getServletContext().getInitParameter("db.password");
+        
+        dbJndiName = getServletContext().getInitParameter("db.jndi.name");
     }
     
-    private void configDbConnection() {
+    private void configDbConnection() throws SQLException, NamingException {
         authService.getDao().initDao(driverClass, url, userName, password);
+        
+        if(dbJndiName == null) {
+            authService.getDao().initDao(driverClass, url, userName, password);
+        } else {
+            Context ctx = new InitialContext();
+            DataSource ds = (DataSource) ctx.lookup(dbJndiName);
+            authService.getDao().initDao(ds);
+        }
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

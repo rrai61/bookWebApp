@@ -5,6 +5,9 @@
  */
 package edu.wctc.rr.model;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 /**
  *
  * @author ritu
@@ -17,7 +20,12 @@ public class InvalidEntryException extends Exception {
     // Constructor that accepts a message
     public InvalidEntryException(String message)
     {
-       super(message);
+        super(message);
+    }
+    
+    public InvalidEntryException(String message, Throwable cause)
+    {
+        super(message, cause);
     }
     
 }

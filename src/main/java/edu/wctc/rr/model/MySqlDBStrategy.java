@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import javax.sql.DataSource;
 import javax.enterprise.context.Dependent;
 
 /**
@@ -36,6 +37,11 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
         
         Class.forName (driverClass);
 	conn = DriverManager.getConnection(url, userName, password);
+    }
+    
+    @Override
+    public void openConnection(DataSource ds) throws SQLException{
+        conn = ds.getConnection();
     }
     
     @Override
@@ -75,7 +81,7 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
         }
         catch(InvalidEntryException ex)
         {
-            System.out.println(ex.getMessage());
+            ex.getMessage();
         }     
         return records;
     }
@@ -104,7 +110,7 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             }
         }
         catch (InvalidEntryException ex){
-            System.out.println(ex.getMessage());
+            ex.getMessage();
         }
         return record;
     }
@@ -137,7 +143,7 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             }
         }
         catch (InvalidEntryException ex){
-            System.out.println(ex.getMessage());
+            ex.getMessage();
         }  
     }
     
@@ -153,6 +159,8 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
     public void createRecord(String tableName, List<String> colNames, 
             List<Object> colValues) throws SQLException {
         
+        boolean flag = false;
+        
         try {
             if(tableName.isEmpty()){ 
                 throw new InvalidEntryException("Error: tableName cannot be empty");
@@ -160,10 +168,38 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             if(colNames.isEmpty()) {
                 throw new InvalidEntryException("Error: List of colNames cannot be empty");
             }
+            if(!(colNames.isEmpty())) {
+                int count =0;
+                for(String s: colNames) {
+                    if(s.isEmpty()) {
+                        count++;
+                    }
+                }
+                if(count>0){
+                    throw new InvalidEntryException("Error: " + count + " Strings in list of colNames are empty");
+                }
+                else {
+                    flag = true;
+                }
+            }
             if(colValues.isEmpty()) {
                 throw new InvalidEntryException("Error: List of colValues cannot be empty");
             }
-            else {
+            if(!(colValues.isEmpty())) {
+                int count =0;
+                for(Object b: colValues) {
+                    if(b.equals("")) {
+                        count++;
+                    }
+                }
+                if(count>0){
+                    throw new InvalidEntryException("Error: " + count + " Objects in list of colValues are empty");
+                }
+                else {
+                    flag = true;
+                }
+            }
+            if (flag == true) {
                 PreparedStatement stmt = buildCreateStatement(tableName, colNames);
                 for(int i=0; i<colValues.size(); i++){
                     stmt.setObject(i+1, colValues.get(i));
@@ -172,7 +208,7 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             }
         }
         catch (InvalidEntryException ex){
-            System.out.println(ex.getMessage());
+            ex.getMessage();
         }
     }
     
@@ -200,6 +236,34 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             List<Object> colValues) throws SQLException {
         
         try {
+            if(colValues.isEmpty()) {
+                throw new InvalidEntryException("Error: List of colValues cannot be empty");
+            }
+            if(!(colValues.isEmpty())) {
+                int count =0;
+                for(Object b: colValues) {
+                    if(b.equals("")) {
+                        count++;
+                    }
+                }
+                if(count>0){
+                    throw new InvalidEntryException("Error: " + count + " Objects in list of colValues are empty");
+                }
+            }
+            if(colNames.isEmpty()) {
+                throw new InvalidEntryException("Error: List of colNames cannot be empty");
+            }
+            if(!(colNames.isEmpty())) {
+                int count =0;
+                for(String s: colNames) {
+                    if(s.isEmpty()) {
+                        count++;
+                    }
+                }
+                if(count>0){
+                    throw new InvalidEntryException("Error: " + count + " Strings in list of colNames are empty");
+                }
+            }
             if(tableName.isEmpty()) { 
                 throw new InvalidEntryException("Error: tableName cannot be empty");
             }
@@ -208,12 +272,6 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             }
             if(primaryValue == null) {
                 throw new InvalidEntryException("Error: primaryValue cannot be null");
-            }
-            if(colNames.isEmpty()) {
-                throw new InvalidEntryException("Error: List of colNames cannot be empty");
-            }
-            if(colValues.isEmpty()) {
-                throw new InvalidEntryException("Error: List of colValues cannot be empty");
             }
             else {
                 PreparedStatement stmt = buildUpdateStatement(tableName, primaryKeyName, colNames);  
@@ -225,7 +283,7 @@ public class MySqlDBStrategy implements DBStrategy, Serializable {
             }
         }
         catch(InvalidEntryException ex) {
-            System.out.println(ex.getMessage());
+            ex.getMessage();
         }
     }
     

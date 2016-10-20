@@ -8,6 +8,7 @@ package edu.wctc.rr.model;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 
 /**
  * Interface for low level MySqlDBStrategy object
@@ -22,6 +23,8 @@ public interface DBStrategy {
     Map<String,Object> findRecordById(String tableName, String primaryKeyName, Object primaryValue) throws ClassNotFoundException, SQLException;
 
     void openConnection(String driverClass, String url, String userName, String password) throws ClassNotFoundException, SQLException;
+    
+    void openConnection(DataSource ds) throws SQLException;
     
     void deleteRecord(String tableName, String primaryKeyName, Object primaryValue) throws ClassNotFoundException, SQLException;
     

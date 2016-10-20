@@ -1,0 +1,88 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 12, 2016, 9:41:44 PM
+    Author     : ritu
+*/
+
+body { 
+    background: url(http://i.huffpost.com/gen/1976688/images/o-BOOK-COFFEE-facebook.jpg) repeat 0 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Corben', Georgia, Times, serif;
+    color: #5c606c;
+}
+p, div {
+    font-family: Georgia, Helvetica, Arial, sans-serif;
+}
+
+h1 { 
+    text-shadow: 1px 1px 1px #ccc;
+}
+
+#authHomeHeader {
+    padding-bottom: 50px;
+}
+
+.table { 
+    box-shadow: 0 0 1em 1em #ccc;
+    background-color: ghostwhite;
+    font-family: 'Nobile', Helvetica, Arial, sans-serif;
+    font-size: 17px;
+}
+
+.btn {
+    padding: 15px;
+    margin:15px;
+    width: 120px;
+}
+
+.btn:hover {
+    background-color: #FF9473;
+    border-color: #FF9473;
+}
+
+.homeBtn {
+    background-color: lightgoldenrodyellow;
+    font-weight: bold;
+    border-width: 3px;
+    font-family: 'Corben', Helvetica, Arial, sans-serif;
+    width:200px;
+    color: #5c606c;
+}
+
+.homeBtn:hover {
+    background-color: #FF9473;
+}
+
+.cancelBtn {
+    background-color: #e2d2d2;
+}
+
+.okBtn {
+    border-color: #5c606c;
+}
+
+.okBtn:hover {
+    background-color: #85e78e;
+    border-color: #85e78e;
+}
+
+.container-narrow { 
+    background: url(cream_dust.png) repeat 0 0;
+    padding: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+    box-shadow: 0 0 1em 0.5em #ccc;
+    text-align: center;
+}
+
+.leftDiv {
+    text-align: left;
+}
+
+
